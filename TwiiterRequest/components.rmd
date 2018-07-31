@@ -1,0 +1,52 @@
+# Components
+
+> para fazer `tag's` personalizadas e modularizar o sistema para deixar mais fácil a criação.
+
+```html
+<script type="text/javascript">
+
+
+  /****
+  # criando um componente
+  1. nome do componente
+  2. objecto de opções
+    - no caso definindo o template.
+  */
+  Vue.component('nome-do-componente',{
+    template: '<li> this is a todo </li>'
+  })
+
+  var app = new Vue({
+    el:'#app'
+  })
+</script>
+```
+
+Porém o interessante seria poder passar algum tipo de dado para o componente. Então o que fazemos é basicamente passar o `props`
+
+```js
+Vue.component('nome-component',{
+  props: ['todo'],
+  template: '<li> {{ todo.text }} </li> '
+})
+
+var app = new Vue({
+  el: '#app',
+  data: {
+    list: [
+      {id: 0, text: 'Vegetables'},
+      {id: 1, text: 'Cheese'},
+      {id: 2, text: 'Whatever else humans are suppusing eat'}
+    ]
+  }
+})
+```
+
+> prop - atributos customizados. E podemos acessar no `template` do componente.
+
+Porém precisamos que o valor passado para o prop tem que ser um objeto.
+
+No html, precisamos adicionar 3 atributos específicos:
+  1. `v-for` - (para cada instância)
+  2. `v-bind: todo="item"` - passa o objeto
+  3. `v-bind: key="item.id"` - passa o id.
