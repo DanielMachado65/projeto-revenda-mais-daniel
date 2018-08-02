@@ -1,0 +1,215 @@
+# Yii
+
+aprender a trabalhar com `yii`, para você conseguir fazer a automatização dos projetos.
+
+### Funcionamento
+1. O usuário faz uma solicitação para `http://www.exemplo.com/index.php?r=post/show&id=1` e o servidor Web processa o pedido executando `index.php` - _o script de bootstrap_.
+2. O script de _bootstrap_ cria uma instância de aplicação (_application_) e a __executa__.
+3. A aplicação obtém as __informações da solicitação__ de um componente da aplicação chamado `request`.
+4. A aplicação __determina o controle e a ação requerida__ com a ajuda do componente chamado `urlManager`.
+  * Para este exemplo, o controle é _post_ que se refere à classe __PostController__ e a ação é __show__ cujo significado real é determinado no controle.
+5. A aplicação __cria uma instância__ do controle solicitado para poder lidar com a solicitação do usuário.
+  * O controle determina que a ação __show__ refere-se a um método chamado __actionShow__ no controle da classe.
+  * Em seguida, cria e executa _filtros_ (por exemplo, o controle de acesso, _benchmarking_) associados a esta ação. A ação só é executada se permitida pelos filtros.
+6. A ação le um __modelo__ Post cujo ID é 1 no Banco de Dados.
+7. A ação __processa a visão__ chamada _show_, com o Post.
+8. A visão __apresenta os atributos__ do modelo Post.
+9. A visão executa alguns __widgets__.
+10. O resultado do processamento da visão é __embutido em um layout__.
+11. A ação conclui o processamento da visão e exibe o resultado ao usuário.
+
+### @Script de Entrada:
+
+é o script __bootstrap__ que processa a solicitação de usuário inicialmente.
+  * único script que o usuário final vê
+
+```php
+//remove a linha produção
+defined('YII_DEBUG') or define('YII_DEBUG', true);
+defined('YII_ENV') or define('YII_ENV', 'dev');
+
+// registra o autoloader do Composer
+require __DIR__ . '/../vendor/autoload.php';
+
+// inclui o arquivo da classe Yii
+require __DIR__ . '/../vendor/yiisoft/yii2/Yii.php';
+
+// carrega a configuração da aplicação
+$config = require __DIR__ . '/../config/web.php';
+
+// cria, configura e executa a aplicação
+(new yii\web\Application($config))->run();
+```
+
+> sempre interessante retirar a opção de debug na fase de produção.
+
+
+### @Aplicação
+
+contexto de execução do processamento de uma solicitação.
+  * Receber uma solicitação do usuário e __enviá-la__ para um controle adequado, para depois um processamento.
+  * Processamento de configurações a nível de aplicação. - _controle de frente_;
+  * criada como um `singleton` que pode ser acessada em qualquer lugar `Yii::app()`;
+
+* #### Configuração:
+  A configuração é um arquivo (array) para inicializar os valores de suas propriedades quando a instância é criada;
+    * sendo um conjunto de chave valor `array('name-controler' => 'key')`
+  Cada chave reprensenta o nome de uma propriedade da instância da aplicação, e cada valor a propriedade inicial correspondente.
+
+```php
+array(
+  'name' => 'Yii Framework',
+  'defaultController' => 'site',
+);
+
+// para aplicar a configuração como um parâmetro ao construtor da aplicação/método
+$app = Yii::createWebApplication($configFile);
+```
+
+2.0;
+
+```php
+require __DIR__ . '/../vendor/autoload.php';
+require __DIR__ . '/../vendor/yiisoft/yii2/Yii.php';
+
+// carrega a configuração da aplicação
+$config = require __DIR__ . '/../config/web.php';
+
+// instancia e configura a aplicação
+(new yii\web\Application($config))->run();
+```
+
+* #### Componentes:
+  As funcionalidades da aplicação podem ser facilmente customizadas e enriquecidas graças à arquitetura flexível de
+  componentes. A aplicação gerencia um conjunto de componentes. Para funcionalidades comuns à todos ou pelo menos em aplicação Web;
+  * Os principais componentes de aplicação:
+    * `asssetManager`(_CAssetManager_) - gerencia a criação dos ativos privados (_assets_)
+    * `authManager`(_CAuthManager_) - gerencia o controle de acesso baseado em regras (_RBAC_)
+    * `cache`(*CCache*) - caching de dados.
+      + Você também pode especificar a classe atual.
+        - `CMemCache`
+        - `CDbCache`
+    * `clientSCript`(_CClientScript_) - gerencia os script's (javascript's e CSS) e cliente;
+    * `coreMessages`(_CPhpMessageSource_) - fornece as principais mensagens traduzidas
+    * `db`(_CDbConnection_) - conexão com banco de dados
+    * `errorHandler` (*CErrorHandler*) - processa os erros e execeções do PHP
+    * `messages` (*CPhpMessageSource*) - fornece mensagens traduzidas utilizadas (--repetição)
+    * `request` (*CHttpRequest*) - fornece informações relacionadas à solicitação do usuário.
+    * `securityManager` (*CSecurtyManager*) - segurança/hashing e encriptação
+    * `session` (*CHttpSession*) - funcionalidades relacionadas à sessão
+    * `statePersister` (*CStatePersister*) - estado global do método de persistência
+    * `urlManager` (*CUrlManager*) - análise e criação de URL's
+    * `user`(*CWebUser*) - identidade e informações do usuário final.
+    * `themeManager` (*CThemeManager*) - gerencia temas;
+
+* #### Cliclo de Vida
+  Quando uma solicitação é feita:
+  1. Pré-inicia a aplicação com o método `CApplication::preinit()`;
+  2. Configura as o auto-carregamento de classes (_autoloader_) e o tratamento de erros;
+  3. __Registra__ os principais __componentes__ da aplicação;
+  4. __Carrega as configurações__ da aplicação;
+  5. Inicia a aplicação com o `CApplication::init()`:
+    1. Registra os comportamentos (_behaviors_) da aplicação;
+    2. Carrega os componentes estáticos da aplicação;
+  6. Dispara o evento __onBeginRequest__ (_no início da requisição_);
+  7. __Processa__ a requisição do usuário:
+    1. Resolve a requisição do usuário;
+    2. Cria um controle;
+    3. Executa o controle;
+  8. Dispara o evento __onEndRequest__ (ao fim da requisição);
+
+```php
+require __DIR__ . '/../vendor/autoload.php';
+require __DIR__ . '/../vendor/yiisoft/yii2/Yii.php';
+
+// carrega a configuração da aplicação
+$config = require __DIR__ . '/../config/web.php';
+
+// instancia e configura a aplicação
+(new yii\web\Application($config))->run();
+```
+
+### @Controle
+
+é um componente (instância) de _CController_ ou uma das suas classes derivadas. Ele é criado durante a requisição do usuário. Quando um controle entra em execução ele executa uma `ação` requisitada, que recupera os modelos necessários e exibe a visão apropriada.
+
+> método na classe do controle, cujo o nome começa com `action` - __ação__
+
+```php
+// não define nenhuma ação, qualquer inteção feita para ele irá disparar uma exceção
+class SiteController extends CController{
+
+}
+```
+
+* #### Rotas:
+  Id de um controle/ação que correspondendo ao arquivo de classe do controle
+
+* #### Ação:
+  método cujo nome começa com a palavra `action`.
+
+```php
+class UpdateAction extends CAction{
+  public function run(){
+    // coloque a lógica aqui.
+  }
+}  
+
+class PostController extends CController{
+  // para que o controle tenha conhecimento dessa ação, precisamos sobreescrever.
+  public function actions(){
+    return array(
+      'edit' => 'application.controllers.post.UpdateAction',
+    );
+  }
+}
+```
+* #### Filtro
+
+filtro de controle antes ou depois de uma ação. Como por exemplo:
+  * autenticação do usuário.
+  * medir tempo
+
+```php
+// instância de classe CFilterChain, que representa a __lista de filtros__ associados com a ação requisitada.
+public function filterAcessControl($filterChain){
+  //utiliza $filterChain->run() para continuar o processo de filtragem e executar a ação
+
+}
+
+// Pode ser instância de CFilter.
+class PerfomanceFilter extends CFilter{
+  protected function preFilter($filterChain){
+    // code
+    return true; // deve retornar false caso a ação não deva ser executada;
+  }
+
+  protected function postFilter($filterChain){
+    // executada depois da ação
+  }
+}
+
+// para aplicar os filtros à ações -- Precisa sobbrescrever o método CController::filters() que deveria retornar um valor de vetor com as configurações.
+class PostController extends CController{
+  public function filters(){
+    return array(
+      'postOnly + edit, create',
+      array(
+        'application.filters.PerfomanceFilter - edit, create',
+        'unit' => 'second',
+      )
+    )
+  }
+}
+```
+
+
+### @Modelo
+
+uma instância/componente de `CModel`. Utilizados para manter dados e suas regras de negocio relevantes.
+
+
+### @Visão
+
+é um script `php` contendo, elementos da interface com usuário. Ela pode ter comandos em `php`, mas é recomendado que tais comandos não alterem dados em modelos e sejam simples. Para poder __renderizar__ o arquiov precisamos de um `CController::render()` informando o nome da visão.
+  * Podemos acessar qualquer propriedade do controle
