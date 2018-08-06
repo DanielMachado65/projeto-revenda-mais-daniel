@@ -7,6 +7,8 @@ Para quem quiser testar o aplicativo vai precisar ou visualizar é necessário a
 
 ## Para acessar o site clicke em [ Link](http://localhost/projeto-Revenda-Mais/basic/web/?r=twitter)
 
+Na pasta basic, que está o aplicativo tem o README.md, que ajudará a instalar. É do próprio yii, então qualquer coisa verificar a documentação. 
+
 -----------
 ### Estrutura do aplicativo:
 
