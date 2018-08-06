@@ -4,10 +4,7 @@ Para quem quiser testar o aplicativo vai precisar ou visualizar é necessário a
   * deixei a url diferente para poder compreender o que o `Yii faria na aplicação`
   * A rota seria o index.html correspondendo um site, que irá informar para você acessar outro site.  
 
-
-## Para acessar o site clicke em [ Link](http://localhost/projeto-Revenda-Mais/basic/web/?r=twitter)
-
-Na pasta basic, que está o aplicativo tem o README.md, que ajudará a instalar. É do próprio yii, então qualquer coisa verificar a documentação. 
+Na pasta `basic`, que está o aplicativo tem o README.md, que ajudará a instalar. É do próprio yii, então qualquer coisa verificar a documentação. 
 
 -----------
 ### Estrutura do aplicativo:
