@@ -11,7 +11,7 @@ use app\models\LoginForm;
 use app\models\ContactForm;
 
 class SiteController extends Controller
-{ 
+{
     /**
      * {@inheritdoc}
      */
@@ -61,6 +61,7 @@ class SiteController extends Controller
      */
     public function actionIndex()
     {
+        $this->layout='twitter';
         return $this->render('index');
     }
 
