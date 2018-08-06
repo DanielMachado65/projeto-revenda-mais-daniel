@@ -91,7 +91,7 @@ var header = new Vue({
             console.log(resposta);
             resposta.forEach(function(data) {
               this_f.comentarios.push({
-                'nome': data.user.name,
+                'nome': data.user.screen_name,
                 'text': data.text,
                 'horario': data.created_at,
                 'imagem': data.user.profile_image_url_https
